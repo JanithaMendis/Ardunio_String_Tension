@@ -1,0 +1,59 @@
+#define PRESSEURE_PIN A0;
+int val;
+int mappedValue;  
+int maxValue = 0;        // variable to store the maximum value
+int minValue = 1023;     // variable to store the minimum value, initialized to the maximum possible value
+
+const int stepPin = 11;
+const int dirPin = 10;
+const int enablePin = 9;
+const int numSteps = 50;
+const int speed0 = 600;
+
+void setup() {
+
+  Serial.begin(9600);
+  
+  // pin Declaration:
+  pinMode(stepPin, OUTPUT);
+  pinMode(dirPin, OUTPUT);
+  pinMode(enablePin, OUTPUT);
+}
+
+void loop() {
+  
+    // Stepper motor:
+   digitalWrite(dirPin, LOW);
+   digitalWrite(enablePin, LOW);
+   for (int i = 0; i < 150; i++) {
+     digitalWrite(stepPin, HIGH);
+     delayMicroseconds(speed0);
+     digitalWrite(stepPin, LOW);
+     delayMicroseconds(speed0);
+   }
+   digitalWrite(enablePin, HIGH);
+
+    // Pressure sensor
+   val = analogRead(A0);
+   delay(10);
+   Serial.print("Pressure :");
+   //Serial.println(val);
+
+   // Map the sensor reading from 1023-0 to 0-100
+   mappedValue = map(val, 0, 1023, 100, 0);
+
+   //sensorValue = analogRead(sensorPin);   // read the analog value from the sensor
+   if (mappedValue > maxValue) {          // if the sensor value is greater than the current maximum value
+    maxValue = mappedValue;              // set the maximum value to the sensor value
+   }
+   if (mappedValue < minValue) {          // if the sensor value is less than the current minimum value
+    minValue = mappedValue;              // set the minimum value to the sensor value
+   }
+   Serial.print("Max value: ");           
+   Serial.print(maxValue);                // print the maximum value to the serial monitor
+   Serial.print(" Min value: ");
+   Serial.println(minValue);               // print the minimum value to the serial monitor
+
+   // Print the mapped value
+   //Serial.println(mappedValue);
+}
